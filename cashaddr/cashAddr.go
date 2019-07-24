@@ -35,7 +35,14 @@ func newKeyStore()*Keystore{
 	var ks Keystore
 	curve :=elliptic.P256()
 	private,_:=ecdsa.GenerateKey(curve,rand.Reader)  //获取私钥
-	pubKey:=append(private.PublicKey.X.Bytes(),private.PublicKey.Y.Bytes()...)
+	var pubKey []byte
+	if (private.PublicKey.Y.Uint64()%2==0){
+		pubKey = append(pubKey,0x02)
+		pubKey = append(pubKey,private.PublicKey.X.Bytes()...)
+	}else{
+		pubKey = append(pubKey,0x03)
+		pubKey = append(pubKey,private.PublicKey.X.Bytes()...)
+	}
 	ks.Priv = private
 	ks.Pub = pubKey
 	return &ks
